@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# CKA exam simulator — orchestrates Lima VMs, kubeadm clusters and the exam portal.
+#   ./cka up        create VMs + install both clusters (first run ~15-25 min)
+#   ./cka exam      start/open the exam portal (http://localhost:8888), --restart to restart it
+#   ./cka status    show VMs and cluster nodes
+#   ./cka stop      stop all VMs (state is kept)      ./cka start   start them again
+#   ./cka ssh <vm>  open a root shell in a VM (cka-base, cka-cp1, cka-w1, cka-cp2, cka-w2)
+#   ./cka destroy   delete all VMs
+set -euo pipefail
+cd "$(dirname "$0")"
+ROOT=$(pwd)
+STATE=$ROOT/state
+mkdir -p "$STATE/keys" "$STATE/logs"
+
+# --- topology -------------------------------------------------------------------------------
+# cluster1: cka-cp1 + cka-w1   (latest minor)
+# cluster2: cka-cp2 + cka-w2   (control plane latest minor, worker one minor behind -> upgrade task)
+K8S_LATEST=${K8S_LATEST:-$(curl -fsSL https://dl.k8s.io/release/stable.txt)}       # e.g. v1.37.1
+MINOR_LATEST=$(echo "$K8S_LATEST" | sed 's/^v//' | cut -d. -f1-2)                   # 1.37
+MINOR_PREV=$(echo "$MINOR_LATEST" | awk -F. '{print $1"."$2-1}')                    # 1.36
+
+VMS=(cka-base cka-cp1 cka-w1 cka-cp2 cka-w2)
+mem_of() { case $1 in
+  cka-base) echo "${MEM_BASE:-1GiB}";; cka-cp1) echo "${MEM_CP1:-2.5GiB}";; cka-w1) echo "${MEM_W1:-2GiB}";;
+  cka-cp2) echo "${MEM_CP2:-2GiB}";; cka-w2) echo "${MEM_W2:-1.5GiB}";; esac; }
+
+log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+vm()   { limactl shell --workdir / "$1" sudo bash -c "$2"; }
+vmrun(){ local h=$1 s=$2; shift 2; limactl copy "$s" "$h:/tmp/$(basename "$s")" && limactl shell --workdir / "$h" sudo bash "/tmp/$(basename "$s")" "$@"; }
+ip_of(){ limactl shell --workdir / "$1" bash -s <<'EOF2'
+dev=$(ip route show default | awk '{print $5; exit}')
+ip -4 -o addr show dev "$dev" | awk '{split($4,a,"/"); print a[1]; exit}'
+EOF2
+}
+exists(){ limactl list -q 2>/dev/null | grep -qx "$1"; }
+
+create_vms() {
+  local pids=()
+  # first lima instance generates ~/.lima/_config/user; avoid racing on it
+  [ -f ~/.lima/_config/user ] || ssh-keygen -q -t ed25519 -N '' -C lima -f ~/.lima/_config/user
+  for v in "${VMS[@]}"; do
+    if exists "$v"; then
+      limactl list "$v" --format '{{.Status}}' | grep -q Running || limactl start "$v" --tty=false >/dev/null 2>&1 &
+    else
+      local tmpl=lima/node.yaml; [ "$v" = cka-base ] && tmpl=lima/base.yaml
+      limactl start --name="$v" --tty=false --set ".memory=\"$(mem_of "$v")\"" "$tmpl" >"$STATE/logs/$v-create.log" 2>&1 &
+    fi
+    pids+=($!)
+  done
+  for p in "${pids[@]}"; do wait "$p"; done
+}
+
+write_hosts() {
+  : > "$STATE/hosts"
+  for v in "${VMS[@]}"; do
+    local ip; ip=$(ip_of "$v"); [ -n "$ip" ] || { echo "no IP for $v"; exit 1; }
+    local short=${v#cka-}; [ "$v" = cka-base ] && short=base
+    echo "$ip $v $short" >> "$STATE/hosts"
+  done
+  # hostnames as the candidate sees them: cka-cp1 / cka-w1 / cka-cp2 / cka-w2 (base = "base")
+  for v in "${VMS[@]}"; do
+    limactl copy "$STATE/hosts" "$v:/tmp/cka-hosts"
+    vm "$v" "sed -i '/# cka-sim/d' /etc/hosts; sed 's/\$/ # cka-sim/' /tmp/cka-hosts >> /etc/hosts"
+  done
+  cat "$STATE/hosts"
+}
+
+setup_keys() {
+  [ -f "$STATE/keys/candidate" ] || ssh-keygen -q -t ed25519 -N '' -C candidate -f "$STATE/keys/candidate"
+  [ -f "$STATE/keys/root" ]      || ssh-keygen -q -t ed25519 -N '' -C cka-root  -f "$STATE/keys/root"
+  for v in "${VMS[@]}"; do
+    limactl copy "$STATE/keys/candidate" "$STATE/keys/candidate.pub" "$STATE/keys/root" "$STATE/keys/root.pub" "$v:/tmp/"
+    vm "$v" '
+      set -e
+      id candidate >/dev/null 2>&1 || useradd -m -s /bin/bash candidate
+      install -d -m700 -o candidate -g candidate /home/candidate/.ssh
+      install -m600 -o candidate -g candidate /tmp/candidate /home/candidate/.ssh/id_ed25519
+      install -m644 -o candidate -g candidate /tmp/candidate.pub /home/candidate/.ssh/id_ed25519.pub
+      cat /tmp/candidate.pub > /home/candidate/.ssh/authorized_keys; chown candidate: /home/candidate/.ssh/authorized_keys; chmod 600 /home/candidate/.ssh/authorized_keys
+      printf "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  LogLevel ERROR\n" > /home/candidate/.ssh/config; chown candidate: /home/candidate/.ssh/config
+      install -d -m700 /root/.ssh
+      install -m600 /tmp/root /root/.ssh/id_ed25519; install -m644 /tmp/root.pub /root/.ssh/id_ed25519.pub
+      grep -qf /tmp/root.pub /root/.ssh/authorized_keys 2>/dev/null || cat /tmp/root.pub >> /root/.ssh/authorized_keys
+      printf "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  LogLevel ERROR\n" > /root/.ssh/config
+      # allow key auth for root inside the private network
+      sed -i "s/^#\?PermitRootLogin.*/PermitRootLogin prohibit-password/" /etc/ssh/sshd_config
+      systemctl reload ssh 2>/dev/null || systemctl reload sshd 2>/dev/null || true
+      rm -f /tmp/candidate /tmp/root'
+  done
+}
+
+ip_from_hosts(){ awk -v n="$1" '$2==n{print $1}' "$STATE/hosts"; }
+
+install_cluster() {  # <cp> <worker> <cp-minor> <worker-minor> <pod-cidr> <svc-cidr>
+  local cp=$1 w=$2 cpm=$3 wm=$4 pod=$5 svc=$6
+  local cpv; cpv=$(curl -fsSL "https://dl.k8s.io/release/stable-$cpm.txt")
+  log "$cp: preparing node (v$cpm)";  vmrun "$cp" provision/node.sh "$cp" "$cpm" "$(ip_from_hosts "$cp")" cp  >"$STATE/logs/$cp-node.log" 2>&1 &
+  local p1=$!
+  log "$w: preparing node (v$wm)";    vmrun "$w"  provision/node.sh "$w"  "$wm"  "$(ip_from_hosts "$w")"  worker >"$STATE/logs/$w-node.log" 2>&1 &
+  local p2=$!
+  wait $p1 || { echo "see $STATE/logs/$cp-node.log"; exit 1; }
+  wait $p2 || { echo "see $STATE/logs/$w-node.log"; exit 1; }
+  log "$cp: kubeadm init $cpv"
+  vmrun "$cp" provision/cp-init.sh "$(ip_from_hosts "$cp")" "$cpv" "$pod" "$svc" >"$STATE/logs/$cp-init.log" 2>&1 || { echo "see $STATE/logs/$cp-init.log"; exit 1; }
+  if ! vm "$cp" "kubectl --kubeconfig /etc/kubernetes/admin.conf get node $w" >/dev/null 2>&1; then
+    log "$w: kubeadm join"
+    local join; join=$(vm "$cp" "kubeadm token create --print-join-command")
+    vm "$w" "$join" >"$STATE/logs/$w-join.log" 2>&1
+  fi
+  log "$cp: addons"
+  vmrun "$cp" provision/addons.sh "$cp" >"$STATE/logs/$cp-addons.log" 2>&1 || { echo "see $STATE/logs/$cp-addons.log"; exit 1; }
+}
+
+cmd_up() {
+  command -v limactl >/dev/null || { echo "lima missing: brew install lima"; exit 1; }
+  log "Kubernetes: cluster1 v$MINOR_LATEST, cluster2 control plane v$MINOR_LATEST / worker v$MINOR_PREV"
+  log "creating VMs (${VMS[*]})"; create_vms
+  log "network";  write_hosts
+  log "ssh keys"; setup_keys
+  log "base host"; vmrun cka-base provision/base.sh >"$STATE/logs/cka-base.log" 2>&1
+  install_cluster cka-cp1 cka-w1 "$MINOR_LATEST" "$MINOR_LATEST" 10.244.0.0/16 10.96.0.0/12 &
+  local c1=$!
+  install_cluster cka-cp2 cka-w2 "$MINOR_LATEST" "$MINOR_PREV"  10.48.0.0/16  10.112.0.0/16 &
+  local c2=$!
+  wait $c1; wait $c2
+  echo "$MINOR_LATEST $MINOR_PREV" > "$STATE/versions"
+  cmd_status
+  log "done. Start the exam with: ./cka exam"
+}
+
+cmd_status() {
+  limactl list | grep -E 'NAME|cka-' || true
+  for cp in cka-cp1 cka-cp2; do
+    echo "--- $cp"; vm "$cp" "kubectl --kubeconfig /etc/kubernetes/admin.conf get nodes -o wide" 2>/dev/null || echo "not reachable"
+  done
+}
+
+case "${1:-}" in
+  up)      cmd_up ;;
+  exam)
+    shift
+    if curl -s -o /dev/null --max-time 2 http://localhost:8888/api/state; then
+      if [ "${1:-}" = "--restart" ]; then pkill -f portal/server.py; sleep 1
+      else echo "Portal already running: http://localhost:8888  (restart: ./cka exam --restart)"; open http://localhost:8888 2>/dev/null; exit 0; fi
+    fi
+    curl -s -o /dev/null --max-time 2 http://127.0.0.1:7681/ || echo "warning: web terminal not reachable — are the VMs running? (./cka start)"
+    (sleep 1; open http://localhost:8888 2>/dev/null) &
+    exec python3 portal/server.py ;;
+  status)  cmd_status ;;
+  stop)    for v in "${VMS[@]}"; do limactl stop "$v" & done; wait ;;
+  start)   create_vms; write_hosts >/dev/null; cmd_status ;;
+  ssh)     limactl shell --workdir / "${2:?vm name}" sudo -i ;;
+  destroy) for v in "${VMS[@]}"; do limactl delete -f "$v" & done; wait; rm -rf "$STATE/hosts" "$STATE/exam.json" ;;
+  *) sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//' ;;
+esac

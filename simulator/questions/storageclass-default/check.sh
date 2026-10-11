@@ -1,0 +1,8 @@
+SC="sc local-retain"
+check "StorageClass local-retain with provisioner rancher.io/local-path" "[ \"\$(jp $SC '{.provisioner}')\" = rancher.io/local-path ]"
+check "reclaimPolicy Retain and volumeBindingMode WaitForFirstConsumer" "[ \"\$(jp $SC '{.reclaimPolicy}:{.volumeBindingMode}')\" = Retain:WaitForFirstConsumer ]"
+check "local-retain is default" "[ \"\$(jp $SC '{.metadata.annotations.storageclass\\.kubernetes\\.io/is-default-class}')\" = true ]"
+check "local-path is no longer default and still exists" "kubectl get sc local-path && [ \"\$(jp sc local-path '{.metadata.annotations.storageclass\\.kubernetes\\.io/is-default-class}')\" != true ]"
+guard "exactly one default StorageClass" "[ \"\$(kubectl get sc -o jsonpath='{range .items[*]}{.metadata.annotations.storageclass\\.kubernetes\\.io/is-default-class}{\"\\n\"}{end}' | grep -c true)\" = 1 ]"
+check "PVC data-claim Bound with storageClassName local-retain" "[ \"\$(jp pvc data-claim -n storage-test '{.status.phase}:{.spec.storageClassName}')\" = Bound:local-retain ]"
+check "Pod data-pod Running with the PVC mounted at /data" "[ \"\$(jp pod data-pod -n storage-test '{.status.phase}')\" = Running ] && [ \"\$(jp pod data-pod -n storage-test '{.spec.volumes[?(@.persistentVolumeClaim.claimName==\"data-claim\")].name}')\" != '' ] && kubectl -n storage-test exec data-pod -- sh -c 'mount | grep -q \" /data \"'"

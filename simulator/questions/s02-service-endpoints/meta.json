@@ -1,0 +1,1 @@
+{"title": "Fix a ClusterIP Service", "host": "cka-cp1", "weight": 5, "domain": "Services & Networking", "section": 2, "lectures": [14295514, 14295512, 19500718], "verified": true}

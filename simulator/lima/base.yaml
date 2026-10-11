@@ -1,0 +1,19 @@
+# CKA simulator "base" host: only the web terminal port is forwarded to the Mac.
+minimumLimaVersion: 2.0.0
+base: template:_images/ubuntu-24.04
+vmType: vz
+cpus: 1
+memory: 1GiB
+disk: 10GiB
+mounts: []
+containerd:
+  system: false
+  user: false
+networks:
+- lima: user-v2
+portForwards:
+- guestPort: 7681
+  hostPort: 7681
+  hostIP: 127.0.0.1
+- guestPortRange: [1, 65535]
+  ignore: true

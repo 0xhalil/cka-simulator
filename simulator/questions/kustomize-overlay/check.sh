@@ -1,0 +1,8 @@
+D="deploy api -n shop-prod"
+guard "base files unchanged" "cd /opt/course/kustomize/base && sha256sum -c --quiet /root/.kustomize-base.sha"
+check "overlay builds with kubectl kustomize" "kubectl kustomize /opt/course/kustomize/overlays/prod"
+check "Deployment api in shop-prod with 3 ready replicas" "[ \"\$(jp $D '{.status.readyReplicas}')\" = 3 ]"
+check "image is nginx:1.27-alpine" "[ \"\$(jp $D '{.spec.template.spec.containers[0].image}')\" = nginx:1.27-alpine ]"
+check "label env=prod on Deployment and Service" "[ \"\$(jp $D '{.metadata.labels.env}')\" = prod ] && [ \"\$(jp svc api -n shop-prod '{.metadata.labels.env}')\" = prod ]"
+check "generated ConfigMap api-config-<hash> has LOG_LEVEL=warn" "kubectl -n shop-prod get cm -o jsonpath='{range .items[*]}{.metadata.name}={.data.LOG_LEVEL}{\"\\n\"}{end}' | grep -Eq '^api-config-[a-z0-9]+=warn\$'"
+check "api container loads the generated ConfigMap via envFrom" "jp $D '{.spec.template.spec.containers[0].envFrom[*].configMapRef.name}' | grep -Eq '^api-config-[a-z0-9]+\$' && kubectl -n shop-prod exec deploy/api -- env | grep -qx LOG_LEVEL=warn"

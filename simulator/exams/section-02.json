@@ -1,0 +1,17 @@
+{
+ "title": "Core Concepts",
+ "kind": "section",
+ "section": 2,
+ "duration_minutes": 50,
+ "description": "Section 2",
+ "questions": [
+  "expose-nodeport",
+  "s02-component-inventory",
+  "s02-deploy-rollout",
+  "s02-explain-fields",
+  "s02-imperative-specs",
+  "s02-namespace-dns",
+  "s02-replicaset-fix",
+  "s02-service-endpoints"
+ ]
+}

@@ -1,0 +1,6 @@
+D="deploy front-end -n sp-culator"; S="svc front-end-svc -n sp-culator"
+check "container nginx exposes containerPort 80/TCP named http" "[ \"\$(jp $D '{.spec.template.spec.containers[?(@.name==\"nginx\")].ports[?(@.name==\"http\")].containerPort}')\" = 80 ] && [ \"\$(jp $D '{.spec.template.spec.containers[?(@.name==\"nginx\")].ports[?(@.name==\"http\")].protocol}')\" != UDP ]"
+check "Service front-end-svc is of type NodePort with nodePort 30080" "[ \"\$(jp $S '{.spec.type}:{.spec.ports[0].nodePort}')\" = NodePort:30080 ]"
+check "Service targets the container port (http or 80)" "jp $S '{.spec.ports[0].targetPort}' | grep -Eqx 'http|80'"
+check "Service has 2 ready endpoints" "[ \"\$(kubectl -n sp-culator get endpointslice -l kubernetes.io/service-name=front-end-svc -o jsonpath='{range .items[*].endpoints[*]}{.conditions.ready}{\"\\n\"}{end}' | grep -c true)\" = 2 ]"
+check "nginx reachable on <nodeIP>:30080" "sleep 3; for ip in \$(kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type==\"InternalIP\")].address}'); do ok=; for t in 1 2 3 4 5; do curl -s --max-time 4 http://\$ip:30080 | grep -q 'Welcome to nginx' && { ok=1; break; }; sleep 3; done; [ -n \"\$ok\" ] || exit 1; done"

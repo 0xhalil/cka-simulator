@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CKA Exam Simulator</title>
+<link rel="stylesheet" href="style.css?v=2">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+</head>
+<body>
+
+<!-- Lobby: pick an exam, prepare scenarios -->
+<section id="lobby" class="screen">
+  <div class="lobby-card">
+    <h1>CKA Exam Simulator</h1>
+    <p class="muted">Performance-based tasks on real kubeadm clusters inside local VMs. Passing score 66%.</p>
+    <div id="exam-list"></div>
+    <div id="review" class="hidden">
+      <h3>Lectures to review</h3>
+      <p class="muted">Based on the tasks you did not fully solve in the latest attempt of each exam.</p>
+      <ul id="review-list"></ul>
+    </div>
+    <div id="prep" class="hidden">
+      <h3>Preparing environment…</h3>
+      <div class="bar"><div id="prep-bar"></div></div>
+      <p id="prep-text" class="muted"></p>
+    </div>
+    <div id="ready" class="hidden">
+      <h3>Environment ready</h3>
+      <p id="ready-warn" class="warn hidden"></p>
+      <ul class="rules">
+        <li>Every task says which host to solve it on: <code>ssh &lt;host&gt;</code> from the <b>base</b> terminal. Solving on the wrong host scores zero.</li>
+        <li>Use <code>sudo -i</code> for root. <code>kubectl</code> works on the control-plane hosts.</li>
+        <li>Allowed docs: kubernetes.io/docs, kubernetes.io/blog, helm.sh/docs, gateway-api.sigs.k8s.io.</li>
+        <li>The timer starts when you press Start. At 0:00 the exam is submitted automatically.</li>
+        <li>Terminal copy/paste: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> / <kbd>V</kbd> (or Cmd on macOS). Click any code in a task to copy it.</li>
+      </ul>
+      <button id="start-btn" class="primary big">Start exam</button>
+    </div>
+  </div>
+</section>
+
+<!-- Exam -->
+<section id="exam" class="screen hidden">
+  <header class="topbar">
+    <div class="brand">CKA <span class="muted" id="exam-title"></span></div>
+    <nav id="qnav"></nav>
+    <div class="right">
+      <span class="timer" id="timer">--:--</span>
+      <button id="notes-btn">Notepad</button>
+      <div class="dropdown">
+        <button id="docs-btn">Docs ▾</button>
+        <div class="menu">
+          <a href="https://kubernetes.io/docs/" target="_blank">kubernetes.io/docs</a>
+          <a href="https://kubernetes.io/docs/reference/kubectl/quick-reference/" target="_blank">kubectl Quick Reference</a>
+          <a href="https://helm.sh/docs/" target="_blank">helm.sh/docs</a>
+          <a href="https://gateway-api.sigs.k8s.io/" target="_blank">Gateway API</a>
+        </div>
+      </div>
+      <button id="end-btn" class="danger">End Exam</button>
+    </div>
+  </header>
+  <main class="split">
+    <aside class="question" id="question-pane">
+      <div class="qhead">
+        <div>
+          <div class="qnum" id="qnum"></div>
+          <div class="qmeta" id="qmeta"></div>
+        </div>
+        <button id="flag-btn" title="Flag for review">⚑ Flag</button>
+      </div>
+      <div class="hostbox" id="hostbox"></div>
+      <article id="qbody" class="md"></article>
+      <div id="checkbox" class="checkbox hidden">
+        <div class="check-actions">
+          <button id="check-btn" class="primary">Check</button>
+          <button id="reveal-btn">Show solution</button>
+          <span id="check-status" class="muted"></span>
+        </div>
+        <div id="check-list"></div>
+        <div id="reveal" class="solution md hidden"></div>
+      </div>
+      <div class="qfoot">
+        <button id="prev-btn">‹ Previous</button>
+        <button id="next-btn" class="primary">Next ›</button>
+      </div>
+    </aside>
+    <div class="resizer" id="resizer"></div>
+    <section class="desktop">
+      <div class="tabs" id="term-tabs"></div>
+      <div class="terms" id="terms"></div>
+    </section>
+  </main>
+  <div id="notes" class="notes hidden">
+    <div class="notes-head">Notepad <button id="notes-close">✕</button></div>
+    <textarea id="notes-text" spellcheck="false"></textarea>
+  </div>
+</section>
+
+<!-- Grading / results -->
+<section id="results" class="screen hidden">
+  <div class="results-wrap">
+    <div id="grading" class="hidden">
+      <h2>Grading…</h2>
+      <div class="bar"><div id="grade-bar"></div></div>
+    </div>
+    <div id="score" class="hidden">
+      <div class="score-head">
+        <div>
+          <h1 id="score-pct"></h1>
+          <div id="score-verdict"></div>
+        </div>
+        <div class="muted" id="score-time"></div>
+      </div>
+      <div id="rewatch" class="rewatch hidden"><h3>Rewatch</h3><ul id="rewatch-list"></ul></div>
+      <table class="breakdown" id="breakdown"></table>
+      <div id="details"></div>
+      <button id="new-btn" class="primary">Back to lobby</button>
+    </div>
+  </div>
+</section>
+
+<script src="app.js?v=2"></script>
+</body>
+</html>

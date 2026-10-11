@@ -1,0 +1,18 @@
+{
+ "title": "Application Lifecycle Management",
+ "kind": "section",
+ "section": 5,
+ "duration_minutes": 60,
+ "description": "Section 5",
+ "questions": [
+  "hpa",
+  "s05-command-args",
+  "s05-configmap-env",
+  "s05-init-containers",
+  "s05-inplace-resize",
+  "s05-recreate-strategy",
+  "s05-rollout-history",
+  "s05-secrets",
+  "sidecar"
+ ]
+}

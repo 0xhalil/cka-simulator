@@ -1,0 +1,6 @@
+check "PriorityClass high-priority exists" "kubectl get pc high-priority"
+check "value is 869999 (highest user-defined 870000 minus one)" "[ \"\$(jp pc high-priority '{.value}')\" = 869999 ]"
+check "high-priority is not globalDefault" "kubectl get pc high-priority && [ \"\$(jp pc high-priority '{.globalDefault}')\" != true ]"
+check "busybox-logger uses priorityClassName high-priority" "[ \"\$(jp deploy busybox-logger -n priority '{.spec.template.spec.priorityClassName}')\" = high-priority ]"
+check "busybox-logger rolled out, pod has priority 869999" "kubectl -n priority rollout status deploy/busybox-logger --timeout=60s && kubectl -n priority get pod -l app=busybox-logger -o jsonpath='{.items[*].spec.priority}' | grep -qw 869999"
+guard "report-worker Deployment not modified" "[ \"\$(jp deploy report-worker -n priority '{.spec.template.spec.priorityClassName}')\" = batch-low ] && [ \"\$(jp deploy report-worker -n priority '{.metadata.generation}')\" = 1 ]"

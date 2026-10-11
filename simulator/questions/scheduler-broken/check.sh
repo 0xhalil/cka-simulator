@@ -1,0 +1,5 @@
+check "kube-scheduler pod is Running and Ready" "kubectl -n kube-system wait --for=condition=Ready pod/kube-scheduler-cka-cp2 --timeout=60s"
+check "scheduler manifest uses /etc/kubernetes/scheduler.conf" "grep -Eq -- '--kubeconfig=/etc/kubernetes/scheduler\\.conf\$' /etc/kubernetes/manifests/kube-scheduler.yaml"
+check "Deployment orbit has 3/3 available replicas" "kubectl -n ops wait --for=jsonpath='{.status.availableReplicas}'=3 deploy/orbit --timeout=60s"
+guard "Deployment orbit not modified" "[ \"\$(jp deploy orbit -n ops '{.metadata.generation}')\" = 1 ]"
+guard "no leftover scheduler manifests in /etc/kubernetes/manifests" "[ \$(grep -l 'component: kube-scheduler' /etc/kubernetes/manifests/* | wc -l) -eq 1 ]"

@@ -1,0 +1,9 @@
+NS=s12-ops
+hist() { helm -n $NS history $1 -o json 2>/dev/null; }
+guard "release catalog untouched (revision 1, deployed)" '[ "$(hist catalog | jq -r "length, .[-1].status" | tr "\n" " ")" = "1 deployed " ]'
+check "failed-release.txt names the failed release" '[ "$(tr -d " \n\r" < /opt/course/s12-ops/failed-release.txt)" = checkout ]'
+check "checkout-values.yaml image tag fixed to 6.14.1, other values kept" 'v=$(python3 -c "import yaml,json,sys;print(json.dumps(yaml.safe_load(open(sys.argv[1]))))" /opt/course/s12-ops/checkout-values.yaml) && jq -e "(.image.tag|tostring)==\"6.14.1\" and .replicaCount==2 and .ui.message==\"checkout ready\"" <<<"$v"'
+check "checkout repaired in place: failed revision 1 kept in history, latest deployed" 'hist checkout | jq -e ".[0].revision==1 and (.[0].description|test(\"failed\")) and length>=2 and .[-1].status==\"deployed\""'
+check "checkout runs 2 Ready Pods with image podinfo:6.14.1 and message from the file" '[ "$(jp -n $NS deploy checkout-podinfo "{.spec.template.spec.containers[0].image}")" = ghcr.io/stefanprodan/podinfo:6.14.1 ] && kubectl -n $NS get deploy checkout-podinfo -o yaml | grep -A1 PODINFO_UI_MESSAGE | grep -q "checkout ready" && kubectl -n $NS rollout status deploy/checkout-podinfo --timeout=120s && [ "$(jp -n $NS deploy checkout-podinfo "{.status.readyReplicas}/{.spec.replicas}")" = 2/2 ]'
+check "payments is deployed again from its last good revision (rollback to 1)" 'hist payments | jq -e ".[-1].status==\"deployed\" and .[-1].chart==\"podinfo-6.14.0\" and (.[-1].description|test(\"Rollback to 1\"))"'
+check "payments Pods Ready with image 6.14.0" '[ "$(jp -n $NS deploy payments-podinfo "{.spec.template.spec.containers[0].image}")" = ghcr.io/stefanprodan/podinfo:6.14.0 ] && kubectl -n $NS rollout status deploy/payments-podinfo --timeout=120s && [ "$(jp -n $NS deploy payments-podinfo "{.status.readyReplicas}/{.status.replicas}")" = 1/1 ]'

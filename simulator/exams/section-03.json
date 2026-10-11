@@ -1,0 +1,20 @@
+{
+ "title": "Scheduling",
+ "kind": "section",
+ "section": 3,
+ "duration_minutes": 75,
+ "description": "Section 3",
+ "questions": [
+  "s03-admission-plugins",
+  "priorityclass",
+  "resource-split",
+  "s03-custom-scheduler",
+  "s03-daemonset-taints",
+  "s03-labels-selectors",
+  "s03-limitrange-quota",
+  "s03-manual-schedule",
+  "s03-node-affinity",
+  "s03-static-pods",
+  "s03-vap-policy"
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "title": "Mock Exam A",
+ "description": "Full exam: 2 clusters, 17 tasks",
+ "duration_minutes": 120,
+ "questions": [
+  "hpa",
+  "node-notready",
+  "gateway-migrate",
+  "pv-restore",
+  "rbac-sa",
+  "sidecar",
+  "scheduler-broken",
+  "helm-argo",
+  "netpol-choose",
+  "etcd-backup",
+  "priorityclass",
+  "expose-nodeport",
+  "upgrade-worker",
+  "storageclass-default",
+  "crd-certmanager",
+  "resource-split",
+  "kustomize-overlay"
+ ],
+ "kind": "mock"
+}

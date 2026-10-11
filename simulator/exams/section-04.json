@@ -1,0 +1,13 @@
+{
+ "title": "Logging & Monitoring",
+ "kind": "section",
+ "section": 4,
+ "duration_minutes": 20,
+ "description": "Section 4",
+ "questions": [
+  "s04-logs-multicontainer",
+  "s04-logs-previous",
+  "s04-logs-selector",
+  "s04-top-usage"
+ ]
+}

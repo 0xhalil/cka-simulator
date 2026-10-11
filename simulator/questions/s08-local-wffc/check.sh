@@ -1,0 +1,8 @@
+PV="pv s08-local-pv"
+check "StorageClass s08-local: no-provisioner and WaitForFirstConsumer" '[ "$(jp sc s08-local "{.provisioner}:{.volumeBindingMode}")" = kubernetes.io/no-provisioner:WaitForFirstConsumer ]'
+check "PV s08-local-pv: local /mnt/s08-local, 128Mi, RWO, Retain, class s08-local" '[ "$(jp $PV "{.spec.local.path}:{.spec.capacity.storage}:{.spec.accessModes[*]}:{.spec.persistentVolumeReclaimPolicy}:{.spec.storageClassName}")" = /mnt/s08-local:128Mi:ReadWriteOnce:Retain:s08-local ] && [ -z "$(jp $PV "{.spec.hostPath}")" ]'
+check "PV has nodeAffinity to cka-w1" 'jp $PV "{.spec.nodeAffinity.required.nodeSelectorTerms[*].matchExpressions[*].values[*]}" | grep -qw cka-w1'
+check "pvc-phase.txt shows the claim was Pending before a consumer existed" '[ "$(tr -d "[:space:]" < /opt/course/s08-local/pvc-phase.txt)" = Pending ]'
+check "PVC local-claim is Bound to s08-local-pv" '[ "$(jp pvc local-claim -n s08-local "{.status.phase}:{.spec.volumeName}:{.spec.storageClassName}")" = Bound:s08-local-pv:s08-local ]'
+check "Pod local-writer Running on cka-w1 without nodeName/nodeSelector in its manifest" 'kubectl -n s08-local wait --for=condition=Ready pod/local-writer --timeout=60s && [ "$(jp pod local-writer -n s08-local "{.spec.nodeName}")" = cka-w1 ] && [ -z "$(jp pod local-writer -n s08-local "{.spec.nodeSelector}")" ] && [ -z "$(jp pod local-writer -n s08-local "{.metadata.annotations.kubectl\.kubernetes\.io/last-applied-configuration}" | grep -o nodeName)" ]'
+check "hello.txt written to /mnt/s08-local on cka-w1" 'on cka-w1 "grep -q \"written by local-writer\" /mnt/s08-local/hello.txt"'

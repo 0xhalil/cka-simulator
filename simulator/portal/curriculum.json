@@ -1,0 +1,939 @@
+{
+ "1": {
+  "title": "Introduction",
+  "lectures": [
+   {
+    "id": 14296562,
+    "title": "Certification"
+   },
+   {
+    "id": 14655942,
+    "title": "The Kubernetes Trilogy"
+   },
+   {
+    "id": 14224074,
+    "title": "Course Introduction"
+   }
+  ]
+ },
+ "2": {
+  "title": "Core Concepts",
+  "lectures": [
+   {
+    "id": 14280352,
+    "title": "Core Concepts - Section Introduction"
+   },
+   {
+    "id": 14298418,
+    "title": "Cluster Architecture"
+   },
+   {
+    "id": 37105770,
+    "title": "Docker-vs-ContainerD"
+   },
+   {
+    "id": 14298420,
+    "title": "ETCD For Beginners"
+   },
+   {
+    "id": 14298422,
+    "title": "ETCD in Kubernetes"
+   },
+   {
+    "id": 46253723,
+    "title": "A note on Docker deprecation"
+   },
+   {
+    "id": 14298430,
+    "title": "Kube Scheduler"
+   },
+   {
+    "id": 14298426,
+    "title": "Kube-API Server"
+   },
+   {
+    "id": 14298428,
+    "title": "Kube Controller Manager"
+   },
+   {
+    "id": 14298434,
+    "title": "Kube Proxy"
+   },
+   {
+    "id": 16214484,
+    "title": "Pods with YAML"
+   },
+   {
+    "id": 16214516,
+    "title": "Demo - Pods with YAML"
+   },
+   {
+    "id": 14280406,
+    "title": "Practice Test Introduction"
+   },
+   {
+    "id": 14298432,
+    "title": "Kubelet"
+   },
+   {
+    "id": 14298658,
+    "title": "Recap - ReplicaSets"
+   },
+   {
+    "id": 17649604,
+    "title": "Demo: Accessing Labs"
+   },
+   {
+    "id": 21738670,
+    "title": "Lab Solution - ReplicaSets (optional)"
+   },
+   {
+    "id": 14295508,
+    "title": "Deployments"
+   },
+   {
+    "id": 14298578,
+    "title": "Pods"
+   },
+   {
+    "id": 21738668,
+    "title": "Lab Solution - Pods (optional)"
+   },
+   {
+    "id": 14295512,
+    "title": "Services"
+   },
+   {
+    "id": 14295514,
+    "title": "Services Cluster IP"
+   },
+   {
+    "id": 21799360,
+    "title": "Services - Loadbalancer"
+   },
+   {
+    "id": 19500718,
+    "title": "Lab Solution - Services (optional)"
+   },
+   {
+    "id": 19374124,
+    "title": "Lab Solution - Deployments (optional)"
+   },
+   {
+    "id": 19374168,
+    "title": "Lab Solution - Namespaces (optional)"
+   },
+   {
+    "id": 21500820,
+    "title": "Imperative vs Declarative"
+   },
+   {
+    "id": 52883807,
+    "title": "Kubectl Explain Command"
+   },
+   {
+    "id": 21500826,
+    "title": "Kubectl Apply Command"
+   },
+   {
+    "id": 19374160,
+    "title": "Lab Solution - Imperative Commands (optional)"
+   },
+   {
+    "id": 38139820,
+    "title": "A Quick Reminder"
+   },
+   {
+    "id": 14295510,
+    "title": "Namespaces"
+   },
+   {
+    "id": 15018998,
+    "title": "Certification Tips - Imperative Commands with Kubectl"
+   },
+   {
+    "id": 14937836,
+    "title": "Certification Tip!"
+   }
+  ]
+ },
+ "3": {
+  "title": "Scheduling",
+  "lectures": [
+   {
+    "id": 14295640,
+    "title": "Scheduling - Section Introduction"
+   },
+   {
+    "id": 14295580,
+    "title": "Manual Scheduling"
+   },
+   {
+    "id": 19500744,
+    "title": "Lab Solution -  Manual Scheduling (optional)"
+   },
+   {
+    "id": 14295582,
+    "title": "Labels and Selectors"
+   },
+   {
+    "id": 17427706,
+    "title": "Lab Solution : Labels and Selectors : (Optional)"
+   },
+   {
+    "id": 16063306,
+    "title": "Taints and Tolerations"
+   },
+   {
+    "id": 16063312,
+    "title": "Node Selectors"
+   },
+   {
+    "id": 21738764,
+    "title": "Lab Solution -  Taints and Tolerations (Optional)"
+   },
+   {
+    "id": 16063314,
+    "title": "Node Affinity"
+   },
+   {
+    "id": 21738774,
+    "title": "Lab Solution - Node Affinity (Optional)"
+   },
+   {
+    "id": 14298678,
+    "title": "Resource Requirements"
+   },
+   {
+    "id": 17428406,
+    "title": "Lab Solution - Resource Limits"
+   },
+   {
+    "id": 14295586,
+    "title": "DaemonSets"
+   },
+   {
+    "id": 21744390,
+    "title": "Lab Solution - Static Pods (Optional)"
+   },
+   {
+    "id": 50065393,
+    "title": "Priority Classes"
+   },
+   {
+    "id": 19500732,
+    "title": "Lab Solution - DaemonSets (optional)"
+   },
+   {
+    "id": 16063318,
+    "title": "Taints and Tolerations vs Node Affinity"
+   },
+   {
+    "id": 14295588,
+    "title": "Multiple Schedulers"
+   },
+   {
+    "id": 14295628,
+    "title": "Configuring Scheduler Profiles"
+   },
+   {
+    "id": 16705410,
+    "title": "Lab Solution - Multiple Scheduler"
+   },
+   {
+    "id": 48276491,
+    "title": "(2025 Updates)Admission Controllers"
+   },
+   {
+    "id": 48276501,
+    "title": "(2025 Updates)Lab Solution: Admission Controllers"
+   },
+   {
+    "id": 48276505,
+    "title": "(2025 Updates)Validating and Mutating Admission Controllers"
+   },
+   {
+    "id": 48276515,
+    "title": "(2025 Updates)Lab Solution: Validating and Mutating Admission Controllers"
+   },
+   {
+    "id": 14863335,
+    "title": "Static Pods"
+   },
+   {
+    "id": 14937592,
+    "title": "A quick note on editing Pods and Deployments"
+   }
+  ]
+ },
+ "4": {
+  "title": "Logging & Monitoring",
+  "lectures": [
+   {
+    "id": 14295996,
+    "title": "Monitor Cluster Components"
+   },
+   {
+    "id": 17428590,
+    "title": "Lab Solution: Monitor Cluster Components"
+   },
+   {
+    "id": 14295994,
+    "title": "Logging and Monitoring - Section Introduction"
+   },
+   {
+    "id": 14296002,
+    "title": "Managing Application Logs"
+   },
+   {
+    "id": 17429580,
+    "title": "Lab Solution: Logging : (Optional)"
+   }
+  ]
+ },
+ "5": {
+  "title": "Application Lifecycle Management",
+  "lectures": [
+   {
+    "id": 14296006,
+    "title": "Application Lifecycle Management - Section Introduction"
+   },
+   {
+    "id": 14296008,
+    "title": "Rolling Updates and Rollbacks"
+   },
+   {
+    "id": 17428352,
+    "title": "Lab Solution: Rolling update"
+   },
+   {
+    "id": 14296012,
+    "title": "Commands and Arguments in Docker"
+   },
+   {
+    "id": 14296014,
+    "title": "Commands and Arguments in Kubernetes"
+   },
+   {
+    "id": 14412322,
+    "title": "Configuring ConfigMaps in Applications"
+   },
+   {
+    "id": 21744350,
+    "title": "Lab Solution -  Env Variables (Optional)"
+   },
+   {
+    "id": 21744338,
+    "title": "Lab Solution -  Commands and Arguments (Optional)"
+   },
+   {
+    "id": 14296016,
+    "title": "Secrets"
+   },
+   {
+    "id": 21744372,
+    "title": "Lab Solution -  Secrets (Optional)"
+   },
+   {
+    "id": 34549248,
+    "title": "Demo: Encrypting Secret Data at Rest"
+   },
+   {
+    "id": 15029472,
+    "title": "Multi Container Pods"
+   },
+   {
+    "id": 21744380,
+    "title": "Lab Solution - Init Containers (Optional)"
+   },
+   {
+    "id": 51450256,
+    "title": "Multi container Pods Design Pattern"
+   },
+   {
+    "id": 14296026,
+    "title": "Configure Environment Variables in Applications"
+   },
+   {
+    "id": 48755033,
+    "title": "(2025 Updates) Introduction to Autoscaling?"
+   },
+   {
+    "id": 48755067,
+    "title": "(2025 Updates) Horizontal Pod Autoscaler (HPA)?"
+   },
+   {
+    "id": 48755083,
+    "title": "(2025 Updates) In-Place Resize of Pods?"
+   },
+   {
+    "id": 48755089,
+    "title": "(2025 Updates) Vertical Pod Autoscaling (VPA)?"
+   },
+   {
+    "id": 14827414,
+    "title": "A Note on Secrets"
+   }
+  ]
+ },
+ "6": {
+  "title": "Cluster Maintenance",
+  "lectures": [
+   {
+    "id": 14296040,
+    "title": "Cluster Maintenance - Section Introduction"
+   },
+   {
+    "id": 14296046,
+    "title": "OS Upgrades"
+   },
+   {
+    "id": 14296066,
+    "title": "Backup and Restore Methods"
+   },
+   {
+    "id": 14296062,
+    "title": "Cluster Upgrade Introduction"
+   },
+   {
+    "id": 24458188,
+    "title": "Demo - Cluster upgrade"
+   },
+   {
+    "id": 14296052,
+    "title": "Kubernetes Releases"
+   },
+   {
+    "id": 18478622,
+    "title": "Working with ETCDCTL and ETCDUTL"
+   },
+   {
+    "id": 14410304,
+    "title": "Certification Exam Tip!"
+   }
+  ]
+ },
+ "7": {
+  "title": "Security",
+  "lectures": [
+   {
+    "id": 14296078,
+    "title": "Kubernetes Security Primitives"
+   },
+   {
+    "id": 14296088,
+    "title": "TLS Introduction"
+   },
+   {
+    "id": 14296084,
+    "title": "Authentication"
+   },
+   {
+    "id": 14296074,
+    "title": "Security - Section Introduction"
+   },
+   {
+    "id": 14296092,
+    "title": "TLS in Kubernetes"
+   },
+   {
+    "id": 14296096,
+    "title": "TLS in Kubernetes - Certificate Creation"
+   },
+   {
+    "id": 14296098,
+    "title": "View Certificate Details"
+   },
+   {
+    "id": 14296100,
+    "title": "Certificates API"
+   },
+   {
+    "id": 32211138,
+    "title": "Lab Solution - View Certification Details"
+   },
+   {
+    "id": 32211144,
+    "title": "Lab Solution - Certificates API"
+   },
+   {
+    "id": 14296108,
+    "title": "API Groups"
+   },
+   {
+    "id": 14296104,
+    "title": "KubeConfig"
+   },
+   {
+    "id": 14296090,
+    "title": "TLS Basics"
+   },
+   {
+    "id": 32211156,
+    "title": "Lab Solution - Cluster Roles"
+   },
+   {
+    "id": 23096066,
+    "title": "Authorization"
+   },
+   {
+    "id": 32211148,
+    "title": "Lab Solution - KubeConfig"
+   },
+   {
+    "id": 32211152,
+    "title": "Lab Solution - Role-Based Access Controls"
+   },
+   {
+    "id": 14296110,
+    "title": "Role Based Access Controls"
+   },
+   {
+    "id": 14296114,
+    "title": "Image Security"
+   },
+   {
+    "id": 18696106,
+    "title": "Service Accounts"
+   },
+   {
+    "id": 14296112,
+    "title": "Cluster Roles"
+   },
+   {
+    "id": 37844312,
+    "title": "Lab Solution:  Service Accounts"
+   },
+   {
+    "id": 25864666,
+    "title": "Pre-requisite - Security in Docker"
+   },
+   {
+    "id": 14296116,
+    "title": "Security Contexts"
+   },
+   {
+    "id": 24458474,
+    "title": "Developing network policies"
+   },
+   {
+    "id": 32211158,
+    "title": "Lab Solution - Image Security"
+   },
+   {
+    "id": 48273217,
+    "title": "(2025 Updates)Custorm Resource Definition (CRD)"
+   },
+   {
+    "id": 32211174,
+    "title": "Lab Solution -  Security Contexts"
+   },
+   {
+    "id": 14332380,
+    "title": "Network Policy"
+   },
+   {
+    "id": 21913718,
+    "title": "Lab Solution -  Network Policies (optional)"
+   },
+   {
+    "id": 48273225,
+    "title": "(2025 Updates) Custom Controllers"
+   },
+   {
+    "id": 48273233,
+    "title": "(2025 Updates) Operator Framework"
+   }
+  ]
+ },
+ "8": {
+  "title": "Storage",
+  "lectures": [
+   {
+    "id": 17482920,
+    "title": "Docker Storage - Introduction"
+   },
+   {
+    "id": 17482930,
+    "title": "Storage in Docker"
+   },
+   {
+    "id": 17482962,
+    "title": "Container Storage Interface"
+   },
+   {
+    "id": 14296130,
+    "title": "Persistent Volume Claims"
+   },
+   {
+    "id": 14296120,
+    "title": "Storage - Section Introduction"
+   },
+   {
+    "id": 17482942,
+    "title": "Volume Driver Plugins in Docker"
+   },
+   {
+    "id": 21913030,
+    "title": "Lab Solution - Persistent Volumes and Persistent Volume Claims"
+   },
+   {
+    "id": 14296124,
+    "title": "Volumes"
+   },
+   {
+    "id": 14296126,
+    "title": "Persistent Volumes"
+   },
+   {
+    "id": 32211186,
+    "title": "Lab Solution - Storage Class"
+   },
+   {
+    "id": 21795216,
+    "title": "Storage Class"
+   },
+   {
+    "id": 17328568,
+    "title": "Using PVCs in Pods"
+   },
+   {
+    "id": 17489738,
+    "title": "Additional Topics"
+   }
+  ]
+ },
+ "9": {
+  "title": "Networking",
+  "lectures": [
+   {
+    "id": 14296136,
+    "title": "Networking - Introduction"
+   },
+   {
+    "id": 14296138,
+    "title": "Prerequisite Switching, Routing, Gateways CNI in Kubernetes"
+   },
+   {
+    "id": 14296142,
+    "title": "Prerequisite Network Namespaces"
+   },
+   {
+    "id": 14296144,
+    "title": "Prerequisite Docker Networking"
+   },
+   {
+    "id": 14296146,
+    "title": "Prerequisite CNI"
+   },
+   {
+    "id": 14296140,
+    "title": "Prerequisite DNS"
+   },
+   {
+    "id": 14296160,
+    "title": "ipam weave"
+   },
+   {
+    "id": 21739688,
+    "title": "Lab Solution - Explore CNI (optional)"
+   },
+   {
+    "id": 14296148,
+    "title": "Cluster Networking"
+   },
+   {
+    "id": 14296152,
+    "title": "CNI in kubernetes"
+   },
+   {
+    "id": 21739568,
+    "title": "Lab Solution - Explore Environment (optional)"
+   },
+   {
+    "id": 14296150,
+    "title": "Pod Networking"
+   },
+   {
+    "id": 21739822,
+    "title": "Lab Solution -  Explore DNS (optional)"
+   },
+   {
+    "id": 14296166,
+    "title": "CoreDNS in Kubernetes"
+   },
+   {
+    "id": 14296170,
+    "title": "Ingress"
+   },
+   {
+    "id": 14296162,
+    "title": "Service Networking"
+   },
+   {
+    "id": 21739774,
+    "title": "Lab Solution - Service Networking (optional)"
+   },
+   {
+    "id": 48755137,
+    "title": "Introduction to Gateway API (2025 updates)"
+   },
+   {
+    "id": 21738984,
+    "title": "Lab Solution -  Ingress Networking 1  - (optional)"
+   },
+   {
+    "id": 14296164,
+    "title": "DNS in kubernetes"
+   },
+   {
+    "id": 21738990,
+    "title": "Lab Solution - Ingress Networking - 2 (optional)"
+   },
+   {
+    "id": 50127829,
+    "title": "Practical Guide to Gateway API (2025 Updates)"
+   },
+   {
+    "id": 28046886,
+    "title": "Article: Ingress"
+   },
+   {
+    "id": 16827080,
+    "title": "Ingress - Annotations and rewrite-target"
+   },
+   {
+    "id": 21615696,
+    "title": "Important Note about CNI and CKA Exam"
+   }
+  ]
+ },
+ "10": {
+  "title": "Design and Install a Kubernetes Cluster",
+  "lectures": [
+   {
+    "id": 14296182,
+    "title": "Design a Kubernetes Cluster"
+   },
+   {
+    "id": 14296184,
+    "title": "Choosing Kubernetes Infrastructure"
+   },
+   {
+    "id": 14296190,
+    "title": "Configure High Availability"
+   },
+   {
+    "id": 14296192,
+    "title": "ETCD in HA"
+   }
+  ]
+ },
+ "11": {
+  "title": "Install \"Kubernetes the kubeadm way\"",
+  "lectures": [
+   {
+    "id": 20666298,
+    "title": "Demo - Deployment with Kubeadm"
+   },
+   {
+    "id": 20666292,
+    "title": "Deployment With kubeadm - Introduction"
+   },
+   {
+    "id": 17332598,
+    "title": "Lab Solution - Deploy a Kubernetes Cluster using kubeadm : (Optional)"
+   },
+   {
+    "id": 20666284,
+    "title": "Deployment With Kubeadm - Provision VMs With Vagrant"
+   }
+  ]
+ },
+ "12": {
+  "title": "(2025 Updates)Helm Basics",
+  "lectures": [
+   {
+    "id": 48273147,
+    "title": "Installation and Configuration"
+   },
+   {
+    "id": 48273163,
+    "title": "A Quick Note on Helm2 vs Helm3"
+   },
+   {
+    "id": 48273171,
+    "title": "Helm Components"
+   },
+   {
+    "id": 48273177,
+    "title": "Helm Charts"
+   },
+   {
+    "id": 48273183,
+    "title": "Working With Helm - Basics"
+   },
+   {
+    "id": 48273139,
+    "title": "Helm - Introduction"
+   },
+   {
+    "id": 48273199,
+    "title": "Lifecycle Management With Helm"
+   },
+   {
+    "id": 48273189,
+    "title": "Customizing Chart Parameters"
+   }
+  ]
+ },
+ "13": {
+  "title": "(2025 Updates)Kustomize Basics",
+  "lectures": [
+   {
+    "id": 48273251,
+    "title": "Kustomize Problem Statement and Ideology"
+   },
+   {
+    "id": 48273255,
+    "title": "Installation/Setup"
+   },
+   {
+    "id": 48273253,
+    "title": "Kustomize vs Helm"
+   },
+   {
+    "id": 48273261,
+    "title": "Kustomize Output"
+   },
+   {
+    "id": 48273263,
+    "title": "Kustomize ApiVersion & Kind"
+   },
+   {
+    "id": 48273277,
+    "title": "Common Transformers"
+   },
+   {
+    "id": 48273271,
+    "title": "Managing Directories Demo"
+   },
+   {
+    "id": 48273257,
+    "title": "The kustomization.yaml File"
+   },
+   {
+    "id": 48273267,
+    "title": "Managing Directories"
+   },
+   {
+    "id": 48273297,
+    "title": "Patches Intro"
+   },
+   {
+    "id": 48273303,
+    "title": "Different Types of Patches"
+   },
+   {
+    "id": 48273307,
+    "title": "Patches Dictionary"
+   },
+   {
+    "id": 48273285,
+    "title": "Transformers Demo"
+   },
+   {
+    "id": 48273283,
+    "title": "Image Transformers"
+   },
+   {
+    "id": 48273315,
+    "title": "Patches List"
+   },
+   {
+    "id": 48273325,
+    "title": "Overlays"
+   },
+   {
+    "id": 48273331,
+    "title": "Components"
+   }
+  ]
+ },
+ "14": {
+  "title": "Troubleshooting",
+  "lectures": [
+   {
+    "id": 14296310,
+    "title": "Application Failure"
+   },
+   {
+    "id": 16695422,
+    "title": "Lab Solution - Application Failure : (Optional)"
+   },
+   {
+    "id": 14296312,
+    "title": "Control Plane Failure"
+   },
+   {
+    "id": 14296314,
+    "title": "Worker Node Failure"
+   },
+   {
+    "id": 17382676,
+    "title": "Lab Solution - Control Plane Failure : (Optional)"
+   },
+   {
+    "id": 14296294,
+    "title": "Troubleshooting - Section Introduction"
+   },
+   {
+    "id": 17360654,
+    "title": "Lab Solution - Worker Node Failure : (Optional)"
+   },
+   {
+    "id": 55527943,
+    "title": "Network Troubleshooting"
+   }
+  ]
+ },
+ "15": {
+  "title": "Other Topics",
+  "lectures": [
+   {
+    "id": 15271414,
+    "title": "JSON Path in Kubernetes"
+   }
+  ]
+ },
+ "17": {
+  "title": "Mock Exams",
+  "lectures": [
+   {
+    "id": 15622940,
+    "title": "Mock Exam - 2 - Solution : (Optional)"
+   },
+   {
+    "id": 15670780,
+    "title": "Mock Exam - 3 - Solution : (Optional)"
+   },
+   {
+    "id": 21738900,
+    "title": "Solution - Mock Exam -1 (Optional)"
+   }
+  ]
+ },
+ "18": {
+  "title": "Bonus Section",
+  "lectures": [
+   {
+    "id": 44020480,
+    "title": "What's Next?"
+   },
+   {
+    "id": 37772362,
+    "title": "Conclusion"
+   }
+  ]
+ }
+}

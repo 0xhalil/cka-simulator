@@ -1,0 +1,9 @@
+R=/opt/course/s13-trans/release; NS=s13-trans; D="-n $NS deploy blue-web-v2"
+guard "base unchanged" 'cd /opt/course/s13-trans/base && sha256sum -c --quiet /root/.s13-trans.sha'
+check "release kustomization builds and uses no patches" 'kubectl kustomize $R >/dev/null && ! grep -Eq "^(patches|patchesStrategicMerge|patchesJson6902):" $R/kustomization.yaml'
+check "Deployment, Service and ConfigMap named blue-*-v2 in s13-trans" 'kubectl -n $NS get deploy/blue-web-v2 svc/blue-web-v2 cm/blue-web-config-v2'
+check "annotation owner=team-blue on all three resources" 'for r in deploy/blue-web-v2 svc/blue-web-v2 cm/blue-web-config-v2; do [ "$(jp -n $NS $r "{.metadata.annotations.owner}")" = team-blue ] || exit 1; done'
+check "label release=r2 on resources, Pod selector/template and Service selector" 'for r in deploy/blue-web-v2 svc/blue-web-v2 cm/blue-web-config-v2; do [ "$(jp -n $NS $r "{.metadata.labels.release}")" = r2 ] || exit 1; done; [ "$(jp $D "{.spec.selector.matchLabels.release}{.spec.template.metadata.labels.release}")" = r2r2 ] && [ "$(jp -n $NS svc blue-web-v2 "{.spec.selector.release}")" = r2 ]'
+check "image nginx:1.27-alpine with 2 ready replicas" '[ "$(jp $D "{.spec.template.spec.containers[0].image}")" = nginx:1.27-alpine ] && kubectl rollout status $D --timeout=90s && [ "$(jp $D "{.status.readyReplicas}")" = 2 ]'
+check "Pods load the renamed ConfigMap blue-web-config-v2 (THEME=blue)" '[ "$(jp $D "{.spec.template.spec.containers[0].envFrom[0].configMapRef.name}")" = blue-web-config-v2 ] && kubectl -n $NS exec deploy/blue-web-v2 -- env | grep -qx THEME=blue'
+check "Service blue-web-v2 has 2 ready endpoints" '[ "$(kubectl -n $NS get endpointslice -l kubernetes.io/service-name=blue-web-v2 -o jsonpath="{range .items[*].endpoints[*]}{.conditions.ready}{\"\n\"}{end}" | grep -c true)" = 2 ]'

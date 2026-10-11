@@ -1,0 +1,7 @@
+H="hpa.v2.autoscaling apache-server -n autoscale"
+check "HPA apache-server exists in namespace autoscale" "kubectl get $H"
+check "targets Deployment apache-server" "[ \"\$(jp $H '{.spec.scaleTargetRef.kind}/{.spec.scaleTargetRef.name}')\" = Deployment/apache-server ]"
+check "minReplicas is 1" "kubectl get $H && { [ \"\$(jp $H '{.spec.minReplicas}')\" = 1 ] || [ -z \"\$(jp $H '{.spec.minReplicas}')\" ]; }"
+check "maxReplicas is 4" "[ \"\$(jp $H '{.spec.maxReplicas}')\" = 4 ]"
+check "CPU target averageUtilization 50%" "[ \"\$(jp $H '{.spec.metrics[?(@.resource.name==\"cpu\")].resource.target.averageUtilization}')\" = 50 ]"
+check "scaleDown stabilizationWindowSeconds is 30" "[ \"\$(jp $H '{.spec.behavior.scaleDown.stabilizationWindowSeconds}')\" = 30 ]"

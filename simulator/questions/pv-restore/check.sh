@@ -1,0 +1,7 @@
+P="pvc mariadb -n mariadb"
+check "PVC mariadb exists with ReadWriteOnce and 250Mi" "[ \"\$(jp $P '{.spec.accessModes[0]}:{.spec.resources.requests.storage}')\" = ReadWriteOnce:250Mi ]"
+check "PVC is Bound to PersistentVolume mariadb-pv" "[ \"\$(jp $P '{.status.phase}:{.spec.volumeName}')\" = Bound:mariadb-pv ]"
+check "deployment file references claimName mariadb" "grep -Eq 'claimName: *\"?mariadb\"?\$' /opt/course/mariadb/mariadb-deploy.yaml"
+check "Deployment mariadb uses PVC mariadb" "[ \"\$(jp deploy mariadb -n mariadb '{.spec.template.spec.volumes[*].persistentVolumeClaim.claimName}')\" = mariadb ]"
+check "Deployment mariadb available and pod Ready" "kubectl -n mariadb rollout status deploy/mariadb --timeout=90s && [ \"\$(jp deploy mariadb -n mariadb '{.status.availableReplicas}')\" = 1 ]"
+check "database files are written to the PersistentVolume on cka-w1" "on cka-w1 'test -d /mnt/data/mariadb/mysql'"

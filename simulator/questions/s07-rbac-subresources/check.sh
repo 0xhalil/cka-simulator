@@ -1,0 +1,11 @@
+ci() { kubectl auth can-i "$@" -n s07-apps --as=sam --as-group=s07-support 2>/dev/null | grep -qx yes; }
+check "Role support and RoleBinding support exist (Group s07-support)" 'kubectl -n s07-apps get role support && [ "$(jp rolebinding support -n s07-apps "{.roleRef.kind}/{.roleRef.name} {.subjects[*].kind}/{.subjects[*].name}")" = "Role/support Group/s07-support" ]'
+check "group can get and list pods" 'ci get pods && ci list pods'
+check "group can read pod logs" 'ci get pods --subresource=log && ci get pods/payments --subresource=log'
+check "group can exec into debug-shell" 'ci create pods/debug-shell --subresource=exec'
+check "group cannot exec into other pods" 'ci create pods/debug-shell --subresource=exec && ! ci create pods/payments --subresource=exec && ! ci create pods/app --subresource=exec'
+check "group can get/update/patch ConfigMap app-config only" 'ci get configmaps/app-config && ci update configmaps/app-config && ci patch configmaps/app-config && ! ci get configmaps/payment-keys && ! ci update configmaps/payment-keys'
+check "app.log contains the logs of Pod app" 'grep -q "token=ZX81-support" /opt/course/s07-rbac/app.log'
+check "exec-payments.txt contains can-i result 'no'" '[ "$(grep -v "^$" /opt/course/s07-rbac/exec-payments.txt | tail -1)" = no ]'
+guard "group cannot delete pods, read secrets or deployments" '! ci delete pods && ! ci get secrets && ! ci list deployments.apps && ! ci list configmaps'
+guard "no permissions in namespace default" '! kubectl auth can-i get pods -n default --as=sam --as-group=s07-support | grep -qx yes'

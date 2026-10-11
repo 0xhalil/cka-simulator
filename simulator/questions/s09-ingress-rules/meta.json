@@ -1,0 +1,1 @@
+{"title": "Ingress with TLS, rewrite and default backend", "host": "cka-cp1", "weight": 5, "domain": "Services & Networking", "section": 9, "lectures": [14296170, 21738984, 21738990]}
